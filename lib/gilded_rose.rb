@@ -1,32 +1,89 @@
 class GildedRose
-  attr_reader :name, :days_remaining, :quality
 
-  def initialize(name:, days_remaining:, quality:)
-    @name = name
-    @days_remaining = days_remaining
-    @quality = quality
+  def tick(item_name:, quality:, days_remaining:)
+    case item_name
+    when 'normal'
+      normal_tick(quality, days_remaining)
+    when 'Aged Brie'
+      brie_tick(quality, days_remaining)
+    when 'Sulfuras, Hand of Ragnaros'
+      sulfuras_tick
+    when 'Backstage passes to a TAFKAL80ETC concert'
+      backstage_tick(quality, days_remaining)
+    end
   end
 
-  def normal_tick
+  private
+
+  def normal_tick(quality, days_remaining)
+    item = Normal.new(@quality, @days_remaining)
+    item.tick
+  end
+
+  def brie_tick(quality, days_remaining)
+    item = Brie.new(@quality, @days_remaining)
+    item.tick
+  end
+
+  def sulfuras_tick
+    # No need to do anything for Sulfuras
+  end
+
+  def backstage_tick(quality, days_remaining)
+    item = Backstage.new(@quality, @days_remaining)
+    item.tick
+  end
+
+end
+
+class Normal
+
+  attr_reader :quality, :days_remaining
+
+  def initialize(quality, days_remaining)
+    @quality = quality
+    @days_remaining = days_remaining
+  end
+
+  def tick
     @days_remaining -= 1
     return if @quality == 0
 
     @quality -= 1
     @quality -= 1 if @days_remaining <= 0
   end
+end
 
-  def brie_tick
+
+class Brie
+  attr_reader :quality, :days_remaining
+
+  def initialize(quality, days_remaining)
+    @quality = quality
+    @days_remaining = days_remaining
+  end
+
+  def tick
     @days_remaining -= 1
     return if @quality >= 50
     @quality += 1
     @quality += 1 if @days_remaining <=0 && @quality < 50
   end
+end
 
-  def sulfuras_tick
 
+class Sulfuras
+end
+
+class Backstage
+  attr_reader :quality, :days_remaining
+
+  def initialize(quality, days_remaining)
+    @quality = quality
+    @days_remaining = days_remaining
   end
 
-  def backstage_tick
+  def tick
     @days_remaining -= 1
     return              if @quality >= 50
     return @quality = 0 if @days_remaining < 0
@@ -34,19 +91,5 @@ class GildedRose
     @quality += 1
     @quality += 1 if @days_remaining < 10
     @quality +=1 if @days_remaining < 5
-
-  end
-
-  def tick
-    case name
-    when 'Normal Item'
-      return normal_tick
-    when 'Aged Brie'
-      return brie_tick
-    when "Sulfuras, Hand of Ragnaros"
-      return sulfuras_tick
-    when 'Backstage passes to a TAFKAL80ETC concert'
-      return backstage_tick
-    end
   end
 end
